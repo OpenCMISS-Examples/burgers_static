@@ -29,7 +29,6 @@ PROGRAM burgers_static
   INTEGER(CMISSIntg), PARAMETER :: EquationsSetUserNumber=11
   INTEGER(CMISSIntg), PARAMETER :: ProblemUserNumber=12
   INTEGER(CMISSIntg), PARAMETER :: ControlLoopNode=0
-  INTEGER(CMISSIntg), PARAMETER :: AnalyticFieldUserNumber=13
   INTEGER(CMISSIntg), PARAMETER :: SolverUserNumber=1
 
   !Program variables
@@ -62,7 +61,7 @@ PROGRAM burgers_static
   TYPE(cmfe_DecompositionType) :: Decomposition
   TYPE(cmfe_EquationsType) :: Equations
   TYPE(cmfe_EquationsSetType) :: EquationsSet
-  TYPE(cmfe_FieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField,AnalyticField
+  TYPE(cmfe_FieldType) :: GeometricField,EquationsSetField,DependentField,MaterialsField
   TYPE(cmfe_FieldsType) :: Fields
   TYPE(cmfe_GeneratedMeshType) :: GeneratedMesh
   TYPE(cmfe_MeshType) :: Mesh
@@ -70,14 +69,13 @@ PROGRAM burgers_static
   TYPE(cmfe_ProblemType) :: Problem
   TYPE(cmfe_ControlLoopType) :: ControlLoop
   TYPE(cmfe_RegionType) :: Region,WorldRegion
-  TYPE(cmfe_SolverType) :: Solver, LinearSolver, NonlinearSolver
+  TYPE(cmfe_SolverType) :: Solver,LinearSolver,NonlinearSolver
   TYPE(cmfe_SolverEquationsType) :: SolverEquations
   LOGICAL :: EXPORT_FIELD
 
   !Generic CMISS variables
   INTEGER(CMISSIntg) :: NumberOfComputationalNodes,ComputationalNodeNumber,BoundaryNodeDomain
-  INTEGER(CMISSIntg) :: EquationsSetIndex
-  INTEGER(CMISSIntg) :: Err
+  INTEGER(CMISSIntg) :: EquationsSetIndex,Err
 
   !Intialise OpenCMISS
   CALL cmfe_Initialise(WorldCoordinateSystem,WorldRegion,Err)
@@ -246,19 +244,7 @@ PROGRAM burgers_static
   !Finish the equations set material field variables
   CALL cmfe_EquationsSet_MaterialsCreateFinish(EquationsSet,Err)
   !Initialise materials field
-  CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE, &
-    & 1,NU_PARAM,Err)
-
-  !-----------------------------------------------------------------------------------------------------------
-  ! ANALYTIC FIELD
-  !-----------------------------------------------------------------------------------------------------------
-
-  !Create the equations set analytic field variables
-  !CALL cmfe_Field_Initialise(AnalyticField,Err)
-  !CALL cmfe_EquationsSet_AnalyticCreateStart(EquationsSet,CMFE_EQUATIONS_SET_BURGERS_EQUATION_ONE_DIM_1,AnalyticFieldUserNumber, &
-  ! & AnalyticField,Err)
-  !Finish the equations set analytic field variables
-  !CALL cmfe_EquationsSet_AnalyticCreateFinish(EquationsSet,Err)
+  CALL cmfe_Field_ComponentValuesInitialise(MaterialsField,CMFE_FIELD_U_VARIABLE_TYPE,CMFE_FIELD_VALUES_SET_TYPE,1,NU_PARAM,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   ! EQUATIONS
@@ -272,9 +258,6 @@ PROGRAM burgers_static
   CALL cmfe_Equations_OutputTypeSet(Equations,CMFE_EQUATIONS_NO_OUTPUT,Err)
   !Finish the equations set equations
   CALL cmfe_EquationsSet_EquationsCreateFinish(EquationsSet,Err)
-
-  !Create the equations set boundary conditions
-  !CALL cmfe_EquationsSetBoundaryConditionsAnalytic(EquationsSet,Err)
 
   !-----------------------------------------------------------------------------------------------------------
   !PROBLEM
@@ -393,11 +376,8 @@ PROGRAM burgers_static
   !OUTPUT
   !-----------------------------------------------------------------------------------------------------------
 
-  !Output Analytic analysis
-  !Call cmfe_AnalyticAnalysis_Output(DependentField,"BurgersAnalytics_1D",Err)
-
   !export fields
-  EXPORT_FIELD=.TRUE.
+  EXPORT_FIELD=.FALSE.
   IF(EXPORT_FIELD) THEN
     CALL cmfe_Fields_Initialise(Fields,Err)
     CALL cmfe_Fields_Create(Region,Fields,Err)
