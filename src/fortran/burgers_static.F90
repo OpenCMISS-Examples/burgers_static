@@ -275,7 +275,7 @@ PROGRAM burgers_static
   CALL cmfe_Problem_ControlLoopCreateStart(Problem,Err)
   !Get the control loop
   CALL cmfe_Problem_ControlLoopGet(Problem,CMFE_CONTROL_LOOP_NODE,ControlLoop,Err)
-  CALL cmfe_ControlLoop_OutputTypeSet(ControlLoop,CMFE_CONTROL_LOOP_PROGRESS_OUTPUT,Err)
+  CALL cmfe_ControlLoop_OutputTypeSet(ControlLoop,CMFE_CONTROL_LOOP_NO_OUTPUT,Err)
 
   !Finish creating the problem control loop
   CALL cmfe_Problem_ControlLoopCreateFinish(Problem,Err)
@@ -370,7 +370,9 @@ PROGRAM burgers_static
   !-----------------------------------------------------------------------------------------------------------
 
   !Solve the problem
+  WRITE(*,'(A)') "Solving problem..."
   CALL cmfe_Problem_Solve(Problem,Err)
+  WRITE(*,'(A)') "Problem solved!"
 
   !-----------------------------------------------------------------------------------------------------------
   !OUTPUT
